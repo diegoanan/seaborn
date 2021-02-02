@@ -1,0 +1,31 @@
+import seaborn as sns
+import moviepy.editor as mpy
+import glob
+import os
+
+os.mkdir('animacion')#crea la carpeta donde se almacenaran os archivos
+%matplotlib notebook
+fps = 1
+sns.set_theme(style="ticks")
+sns.set(rc={'figure.figsize':(11.7,8.27)})
+mpg = sns.load_dataset("mpg")
+
+colors = (250, 70, 50), (350, 70, 50)
+cmap = sns.blend_palette(colors, input="husl", as_cmap=True)
+
+mpg = mpg[mpg['origin'] == 'japan'].reset_index()
+x = range(0, len(mpg))
+
+for i in x:
+    print(i)
+    aux = mpg[0:i+1]
+    graf = sns.displot(
+        aux,
+        x="displacement", col="origin", hue="model_year",
+        kind="ecdf", aspect=.75, linewidth=2, palette=cmap,
+    )
+    graf.savefig('animacion/A%03d.png'%i)#crea las imagenes con las graficas basadas en los datos dados
+    
+file_list = sorted(glob.glob('animacion/*.png'))#enlista en orden numerico y llena el arreglo con las imagenes .png
+clip = mpy.ImageSequenceClip(file_list, fps=fps)#crea la variable de secuancia de imagenes
+clip.write_videofile("animacion/movie.mp4")#almacena la variable en un formato de video.
